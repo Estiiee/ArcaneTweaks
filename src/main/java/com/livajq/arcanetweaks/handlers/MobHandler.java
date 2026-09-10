@@ -1,6 +1,7 @@
 package com.livajq.arcanetweaks.handlers;
 
 import cn.leolezury.eternalstarlight.common.EternalStarlight;
+import com.estie.arcanecontent.init.ArcaneDamageSources;
 import com.github.L_Ender.cataclysm.world.data.CMWorldData;
 import com.livajq.arcanetweaks.ArcaneTweaks;
 import com.livajq.arcanetweaks.Config;
@@ -30,6 +31,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LivingUseTotemEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
@@ -250,5 +252,11 @@ public class MobHandler {
                             entity.getPersistentData().putInt("ArcaneTweaks_PlayerDeathTracker", playerDeaths);
                         }
                 );
+    }
+    
+    //let the "vaporized" damage type bypass totem protection. currently used for dragon nukes but who knows
+    @SubscribeEvent
+    public static void onLivingUseTotem(LivingUseTotemEvent event) {
+        if (event.getSource().is(ArcaneDamageSources.VAPORIZED)) event.setCanceled(true);
     }
 }

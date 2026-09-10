@@ -8,7 +8,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.level.biome.Biome;
@@ -22,7 +21,6 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Mod.EventBusSubscriber(modid = ArcaneTweaks.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public final class Config {
@@ -49,10 +47,6 @@ public final class Config {
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> VILLAGER_BOOK_BLACKLIST;
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> ENCHANTMENT_TIERS;
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> MOB_REPLACEMENTS;
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> BLOCK_SILLY_EFFECT_WEIGHT;
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> BLOCK_SILLY_POSITIVE_EFFECTS;
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> BLOCK_SILLY_NEGATIVE_EFFECTS;
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> BLOCK_SILLY_ITEMS;
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> SHIELD_BASH_PROPERTIES;
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> DISMOUNT_BIOMES;
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> TEMPERED_MONSTER_BIOMES;
@@ -77,7 +71,6 @@ public final class Config {
     
     private static final ForgeConfigSpec.BooleanValue HARDCORE_ICON_VISIBLE;
     private static final ForgeConfigSpec.BooleanValue NARRATOR_KEYBIND;
-    private static final ForgeConfigSpec.BooleanValue BLOCK_SILLY_ENABLED;
     
     private static final ForgeConfigSpec.DoubleValue OBLITERATOR_DAMAGE_CAP;
     private static final ForgeConfigSpec.DoubleValue OBLITERATOR_GROUND_NUKE_DAMAGE_FLAT;
@@ -90,13 +83,11 @@ public final class Config {
     private static final ForgeConfigSpec.DoubleValue HARDCORE_ICON_POSY;
     private static final ForgeConfigSpec.DoubleValue SEA_SERPENT_REACH;
     private static final ForgeConfigSpec.DoubleValue SOUL_FRACTURE_STRENGTH;
-    private static final ForgeConfigSpec.DoubleValue BLOCK_SILLY_CHANCE;
     private static final ForgeConfigSpec.DoubleValue MOB_KILL_HEAL_AMOUNT;
     private static final ForgeConfigSpec.DoubleValue BOSS_MULTIPLAYER_HEALTH_SCALING;
     private static final ForgeConfigSpec.DoubleValue BOSS_MULTIPLAYER_ARMOR_SCALING;
     private static final ForgeConfigSpec.DoubleValue BOSS_MULTIPLAYER_TOUGHNESS_SCALING;
     
-    private static final ForgeConfigSpec.IntValue WORLDGEN_TYPE;
     private static final ForgeConfigSpec.IntValue HARDCORE_LIVES_COUNT;
     private static final ForgeConfigSpec.IntValue HARDCORE_ICON_SIZE;
     private static final ForgeConfigSpec.IntValue DRAGON_NUKE_COLOR_FIRE;
@@ -108,17 +99,9 @@ public final class Config {
     private static final ForgeConfigSpec.IntValue BLOCK_BREAK_COOLDOWN_BASE;
     private static final ForgeConfigSpec.IntValue BLOCK_BREAK_COOLDOWN_EXTRA;
     private static final ForgeConfigSpec.IntValue BLOCK_BREAK_COOLDOWN_MAX;
-    private static final ForgeConfigSpec.IntValue PARRY_WIND_UP;
-    private static final ForgeConfigSpec.IntValue PARRY_WINDOW;
-    private static final ForgeConfigSpec.IntValue PARRY_COOLDOWN_FAIL;
-    private static final ForgeConfigSpec.IntValue PARRY_COOLDOWN_SUCCESS;
     private static final ForgeConfigSpec.IntValue GAMESTAGE_SKILL_CAP_NORMAL;
     private static final ForgeConfigSpec.IntValue GAMESTAGE_SKILL_CAP_EXPERT;
     private static final ForgeConfigSpec.IntValue GAMESTAGE_SKILL_CAP_MASTER;
-    private static final ForgeConfigSpec.IntValue BLOCK_SILLY_GIVE_ITEMS_ROLLS;
-    private static final ForgeConfigSpec.IntValue BLOCK_SILLY_STEAL_ITEMS_ROLLS;
-    private static final ForgeConfigSpec.IntValue BLOCK_SILLY_VISUALS_RADIUS;
-    private static final ForgeConfigSpec.IntValue BLOCK_SILLY_EFFECT_ROLLS;
     private static final ForgeConfigSpec.IntValue DEATHS_FOR_BOSS_FULL_HEAL;
    
     static {
@@ -411,7 +394,7 @@ public final class Config {
         
         BUILDER.pop();
         
-        BUILDER.push("Parrying and blocking");
+        BUILDER.push("Blocking");
         BUILDER.comment("Affects Spartan Weaponry melee block trait");
         
         BLOCK_STAMINA_CONSUME_BASE = BUILDER.comment("Base stamina cost for blocking").defineInRange("blockStaminaConsumeBase", 200, 0, 1000000);
@@ -420,11 +403,7 @@ public final class Config {
         BLOCK_BREAK_COOLDOWN_BASE = BUILDER.comment("Base block cooldown (in ticks) from block disabling attackers").defineInRange("blockBreakCooldownBase", 60, 0, 1000000);
         BLOCK_BREAK_COOLDOWN_EXTRA = BUILDER.comment("Additional block cooldown (in ticks) from block disabling attackers per incoming damage point").defineInRange("blockBreakCooldownExtra", 10, 0, 1000000);
         BLOCK_BREAK_COOLDOWN_MAX = BUILDER.comment("Maximum block cooldown (in ticks) from block disabling attackers").defineInRange("blockBreakCooldownMax", 200, 0, 1000000);
-        PARRY_WIND_UP = BUILDER.comment("Wind up (in ticks) after blocking before parrying can be performed").defineInRange("parryWindUp", 8, 0, 1000000);
-        PARRY_WINDOW = BUILDER.comment("Window (in ticks) in which enemies can be parried").defineInRange("parryWindow", 20, 0, 1000000);
-        PARRY_COOLDOWN_FAIL = BUILDER.comment("Cooldown (in ticks) after an unsuccessful parry before another one can be performed. Used to prevent spamming").defineInRange("parryCooldownFail", 30, 0, 1000000);
-        PARRY_COOLDOWN_SUCCESS = BUILDER.comment("Cooldown (in ticks) after a successful parry before another one can be performed").defineInRange("parryCooldownSuccess", 200, 0, 1000000);
-        
+     
         SHIELD_BASH_PROPERTIES = BUILDER
                 .comment("Extra damage and effects for shields when using the bash ability",
                         "Format: id;damageBonus;effect;amplifier;duration",
@@ -450,72 +429,7 @@ public final class Config {
         
         BUILDER.pop();
         
-        BUILDER.push("Block of Silly");
-        
-        BLOCK_SILLY_ENABLED = BUILDER.comment("Whether the Block of Silly can generate in the world").define("blockSillyEnabled", true);
-        BLOCK_SILLY_CHANCE = BUILDER.comment("Chance for the Block of Silly to replace a random ore block during generation (in %)").defineInRange("blockSillyChance", 0.1D, 0.0D, 100.0D);
-        BLOCK_SILLY_EFFECT_ROLLS = BUILDER.comment("How many effects are rolled per one use of the block").defineInRange("blockSillyEffectRolls", 1, 1, 50);
-        BLOCK_SILLY_VISUALS_RADIUS = BUILDER.comment("Radius (in blocks) in which the Block of Silly can apply certain visual effects").defineInRange("blockSillyVisualsRadius", 15, 0, 100);
-        
-        BLOCK_SILLY_EFFECT_WEIGHT = BUILDER
-                .comment("Weight for each Block of Silly effect. Bigger = more common. 0 = off",
-                        "This option automatically lists all available effects on first load",
-                        "You can delete this option and restart the game to generate them again (if more appear with updates or just to restore them)")
-                .defineListAllowEmpty(
-                        List.of("blockSillyEffectWeight"),
-                        Arrays.stream(BlockItemOfSilly.SillyEffect.values())
-                                .map(e -> e.getId() + "=" + e.getDefaultWeight())
-                                .collect(Collectors.toList()),
-                        o -> o instanceof String s && s.matches("[a-z_]+=\\d+")
-                );
-        
-        BLOCK_SILLY_POSITIVE_EFFECTS = BUILDER
-                .comment("Potion effects applied when the 'positive potion effects' effect is rolled",
-                        "Format: effect;amplifier;duration ticks",
-                        "Example: minecraft:strength;1;300")
-                .defineListAllowEmpty(
-                        List.of("blockSillyPositiveEffects"),
-                        List.of("minecraft:strength;1;300",
-                                "minecraft:haste;2;300",
-                                "minecraft:regeneration;5;300"),
-                        o -> o instanceof String
-                );
-        
-        BLOCK_SILLY_NEGATIVE_EFFECTS = BUILDER
-                .comment("Potion effects applied when the 'negative potion effects' effect is rolled",
-                        "Format: effect;amplifier;duration ticks",
-                        "Example: minecraft:poison;1;300")
-                .defineListAllowEmpty(
-                        List.of("blockSillyNegativeEffects"),
-                        List.of("minecraft:poison;1;300",
-                                "minecraft:wither;2;300",
-                                "minecraft:slowness;5;300"),
-                        o -> o instanceof String
-                );
-        
-        BLOCK_SILLY_ITEMS = BUILDER
-                .comment("List from which items will be rolled when the 'give items' effect is rolled",
-                        "Format: item;count",
-                        "Example: minecraft:diamond;7")
-                .defineListAllowEmpty(
-                        List.of("blockSillyItems"),
-                        List.of("minecraft:diamond;7",
-                                "minecraft:gold_ingot;15",
-                                "minecraft:ender_pearl;5"),
-                        o -> o instanceof String
-                );
-        
-        BLOCK_SILLY_GIVE_ITEMS_ROLLS = BUILDER.comment("Number of rolls for the 'give items' effect").defineInRange("blockSillyGiveItemRolls", 3, 1, 100);
-        BLOCK_SILLY_STEAL_ITEMS_ROLLS = BUILDER.comment("Number of rolls for the 'steal items' effect").defineInRange("blockSillyStealItemRolls", 3, 1, 100);
-        
-        BUILDER.pop();
-        
         BUILDER.push("Misc");
-        
-        WORLDGEN_TYPE = BUILDER
-                .comment("World generation type",
-                        "0: Default (vanilla), 1: Arcane, 2: Biome Blend")
-                .defineInRange("worldgenType", 1, 0, 2);
         
         DEATH_MESSAGES = BUILDER
                 .comment("Extra messages that appear on the death screen")
@@ -690,7 +604,6 @@ public final class Config {
         ritualAdeptNetherBiome = TagKey.create(Registries.BIOME, new ResourceLocation(RITUAL_ADEPT_NETHER_BIOMETAG.get()));
         ritualExpertNetherBiome = TagKey.create(Registries.BIOME, new ResourceLocation(RITUAL_EXPERT_NETHER_BIOMETAG.get()));
         apostleSuperbossBiome = ResourceKey.create(Registries.BIOME, new ResourceLocation(APOSTLE_SUPPERBOSS_BIOME.get()));
-        worldgenType = Mth.clamp(WORLDGEN_TYPE.get(), 0, 2);
         obliteratorDamageCap = OBLITERATOR_DAMAGE_CAP.get();
         obliteratorGroundNukeDamageFlat = OBLITERATOR_GROUND_NUKE_DAMAGE_FLAT.get();
         obliteratorGroundNukeDamagePercent = OBLITERATOR_GROUND_NUKE_DAMAGE_PERCENT.get();
@@ -716,26 +629,12 @@ public final class Config {
         blockBreakCooldownBase = BLOCK_BREAK_COOLDOWN_BASE.get();
         blockBreakCooldownExtra = BLOCK_BREAK_COOLDOWN_EXTRA.get();
         blockBreakCooldownMax = BLOCK_BREAK_COOLDOWN_MAX.get();
-        parryWindUp = PARRY_WIND_UP.get();
-        parryWindow = PARRY_WINDOW.get();
-        parryCooldownFail = PARRY_COOLDOWN_FAIL.get();
-        parryCooldownSuccess = PARRY_COOLDOWN_SUCCESS.get();
         gamestageSkillCapNormal = GAMESTAGE_SKILL_CAP_NORMAL.get();
         gamestageSkillCapExpert = Math.max(gamestageSkillCapNormal, GAMESTAGE_SKILL_CAP_EXPERT.get());
         gamestageSkillCapMaster = Math.max(gamestageSkillCapExpert, GAMESTAGE_SKILL_CAP_MASTER.get());
         narratorKeybind = NARRATOR_KEYBIND.get();
         soulFractureStrength = SOUL_FRACTURE_STRENGTH.get();
         starlightPortalItem = new ResourceLocation(STARLIGHT_PORTAL_ITEM.get());
-        blockSillyEffectWeight = parseBlockSillyEffectWeight();
-        blockSillyPositiveEffects = new ArrayList<>(BLOCK_SILLY_POSITIVE_EFFECTS.get());
-        blockSillyNegativeEffects = new ArrayList<>(BLOCK_SILLY_NEGATIVE_EFFECTS.get());
-        blockSillyEnabled = BLOCK_SILLY_ENABLED.get();
-        blockSillyChance = BLOCK_SILLY_CHANCE.get();
-        blockSillyItems = new ArrayList<>(BLOCK_SILLY_ITEMS.get());
-        blockSillyGiveItemsRolls = BLOCK_SILLY_GIVE_ITEMS_ROLLS.get();
-        blockSillyStealItemsRolls = BLOCK_SILLY_STEAL_ITEMS_ROLLS.get();
-        blockSillyVisualsRadius =  BLOCK_SILLY_VISUALS_RADIUS.get();
-        blockSillyEffectRolls = BLOCK_SILLY_EFFECT_ROLLS.get();
         shieldBashProperties = parseShieldBashProperties();
         mobKillHealAmount = MOB_KILL_HEAL_AMOUNT.get();
         dismountBiomesSet = new HashSet<>(DISMOUNT_BIOMES.get());
@@ -912,24 +811,6 @@ public final class Config {
         return list;
     }
     
-    public static Map<BlockItemOfSilly.SillyEffect, Integer> parseBlockSillyEffectWeight() {
-        return BLOCK_SILLY_EFFECT_WEIGHT.get().stream()
-                .map(s -> s.split("="))
-                .filter(parts -> parts.length == 2)
-                .flatMap(parts -> {
-                    try {
-                        int weight = Integer.parseInt(parts[1].trim());
-                        return Arrays.stream(BlockItemOfSilly.SillyEffect.values())
-                                .filter(e -> e.getId().equals(parts[0].trim()))
-                                .map(e -> Map.entry(e, weight));
-                    } catch (NumberFormatException e) {
-                        ArcaneTweaks.LOGGER.warn("Invalid weight in blockSillyEffectWeight: {}", parts[1]);
-                        return Stream.empty();
-                    }
-                })
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-    
     public static Map<ResourceLocation, ShieldBashProperty> parseShieldBashProperties() {
         Map<ResourceLocation, ShieldBashProperty> map = new HashMap<>();
         
@@ -1001,42 +882,4 @@ public final class Config {
     public record MobReplacement(ResourceLocation oldId, ResourceLocation newId, double chance) {}
     public record ShieldBashProperty(ResourceLocation shieldId, float damageBonus, @Nullable ResourceLocation effectId, int amplifier, int duration) {}
     public record TemperedMonsterBiomes(Set<ResourceLocation> biomeIds, Set<String> biomeTags) {}
-    
-    public record SillyEffects(ResourceLocation effect, int amplifier, int duration) {
-        public static SillyEffects parse(String s) {
-            String[] parts = s.split(";");
-            return new SillyEffects(
-                    new ResourceLocation(parts[0]),
-                    Integer.parseInt(parts[1]),
-                    Integer.parseInt(parts[2])
-            );
-        }
-        
-        public static List<SillyEffects> getPositiveEffects() {
-            return blockSillyPositiveEffects.stream()
-                    .map(s -> parse((String) s))
-                    .toList();
-        }
-        
-        public static List<SillyEffects> getNegativeEffects() {
-            return blockSillyNegativeEffects.stream()
-                    .map(s -> parse((String) s))
-                    .toList();
-        }
-    }
-    public record SillyItems(ResourceLocation item, int count) {
-        public static SillyItems parse(String s) {
-            String[] parts = s.split(";");
-            return new SillyItems(
-                    new ResourceLocation(parts[0]),
-                    Integer.parseInt(parts[1])
-            );
-        }
-        
-        public static List<SillyItems> getItems() {
-            return Config.blockSillyItems.stream()
-                    .map(s -> SillyItems.parse((String) s))
-                    .toList();
-        }
-    }
 }

@@ -124,7 +124,7 @@ public class BossBehaviorHandler {
             
             Set<UUID> set = BossBehavior.MINIONS.computeIfAbsent(boss, b -> new HashSet<>());
             
-            if (set.add(mob.getUUID())) behavior.onMinionDied(boss, mob);
+            if (set.add(mob.getUUID())) behavior.onMinionAdded(boss, mob);
         });
     }
 }

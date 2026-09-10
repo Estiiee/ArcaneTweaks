@@ -10,7 +10,6 @@ import java.awt.*;
 public class DragonFireBehavior extends DragonBehavior<EntityFireDragon> {
     private static final Color FIRE_EXPLOSION_COLOR = new Color(Config.dragonNukeColorFire);
     
-    
     public DragonFireBehavior() {
         super(2);
     }
