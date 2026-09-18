@@ -2,6 +2,8 @@ package com.livajq.arcanetweaks;
 
 import com.Polarice3.Goety.api.ritual.RitualType;
 import com.estie.arcanecontent.init.ArcaneBiomeSources;
+import com.estie.arcanecontent.init.ArcaneBiomes;
+import com.estie.arcanecontent.world.district.ClimateReplacementManager;
 import com.livajq.arcanetweaks.bossbehavior.BossBehaviorRegistry;
 import com.livajq.arcanetweaks.client.renderer.dimensioneffects.EndSkyboxEffects;
 import com.livajq.arcanetweaks.compat.alexscaves.BiomeConfigLoader;
@@ -20,6 +22,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterDimensionSpecialEffectsEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -63,6 +66,14 @@ public class ArcaneTweaks {
             PacketHandler.register();
             ResistanceHandler.init();
             ModEffects.SOUL_FRACTURE.get().addAttributeModifier(Attributes.MAX_HEALTH, "CB3F55D3-645C-4F38-A497-9C13A33DB5CF", -Config.soulFractureStrength, AttributeModifier.Operation.MULTIPLY_TOTAL);
+            
+            ClimateReplacementManager.register(
+                    ClimateReplacementManager.ClimateReplacement
+                            .builder(Biomes.STONY_SHORE)
+                            .temperature(-Float.MAX_VALUE, -0.45F)
+                            .replaceWith(ArcaneBiomes.HOWLING_GLACIERS)
+                            .build()
+            );
             
             //ReskillableGenerator.generateReskillableEntries();
             //ItemObliteratorGenerator.generateObliteratorBlacklist();

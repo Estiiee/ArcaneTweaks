@@ -17,6 +17,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -30,6 +31,7 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -42,6 +44,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.event.ViewportEvent;
+import net.minecraftforge.event.ItemAttributeModifierEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -122,7 +125,7 @@ public class OtherHandler {
         
         BiomeSource vanilla = generator.getBiomeSource();
         if (vanilla instanceof DistrictBiomeSource) return;
-        BiomeSource wrapped = new DistrictBiomeSource(vanilla, level.getSeed());
+        BiomeSource wrapped = new DistrictBiomeSource(vanilla, level.getSeed(), level.registryAccess().registryOrThrow(Registries.BIOME));
 
         ((ChunkGeneratorAccessor) generator).setBiomeSource(wrapped);
     }
@@ -321,6 +324,15 @@ public class OtherHandler {
             if (abyssalFear != null) entity.addEffect(new MobEffectInstance(abyssalFear, 110, 0, false, true), entity);
             if (sapped != null) entity.addEffect(new MobEffectInstance(sapped, 110, 0, false, true), entity);
         }
+    }
+    
+    //remove armor and toughness to make room for a new system
+    @SubscribeEvent
+    public static void onItemAttributeModifiers(ItemAttributeModifierEvent event) {
+        if (!(event.getItemStack().getItem() instanceof ArmorItem)) return;
+        
+        event.removeAttribute(Attributes.ARMOR);
+        event.removeAttribute(Attributes.ARMOR_TOUGHNESS);
     }
     
     //modify out fog effects when Ignis is in the area
