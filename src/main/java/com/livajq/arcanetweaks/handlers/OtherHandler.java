@@ -3,9 +3,12 @@ package com.livajq.arcanetweaks.handlers;
 import com.estie.arcanecontent.init.ArcaneSounds;
 import com.estie.arcanecontent.world.district.DistrictBiomeSource;
 import com.gametechbc.traveloptics.entity.mobs.nightwarden_boss.NightwardenBossEntity;
+import com.gametechbc.traveloptics.init.TravelopticsMessages;
+import com.gametechbc.traveloptics.util.TravelopticsImpactFramePresets;
 import com.github.L_Ender.cataclysm.entity.AnimationMonster.BossMonsters.Ignis_Entity;
 import com.livajq.arcanetweaks.ArcaneTweaks;
 import com.livajq.arcanetweaks.Config;
+import com.livajq.arcanetweaks.compat.traveloptics.CustomImpactFramePresets;
 import com.livajq.arcanetweaks.mixin.vanilla.ChunkGeneratorAccessor;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.ordana.spelunkery.reg.ModFluids;
@@ -15,6 +18,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
@@ -29,6 +33,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
@@ -49,6 +54,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -65,6 +71,15 @@ import java.util.stream.Collectors;
 @Mod.EventBusSubscriber(modid = ArcaneTweaks.MODID)
 public class OtherHandler {
     
+    //experimental impact frame color value tester
+    @SubscribeEvent
+    public static void testHurt(LivingHurtEvent event) {
+        if (!(event.getSource().getEntity() instanceof Zombie)) return;
+        if (!(event.getEntity() instanceof Player player)) return;
+        TravelopticsMessages.sendImpactFrameToRange(player, 128, TravelopticsImpactFramePresets.sequence(CustomImpactFramePresets.EXPERIMENTAL_SHADOWS, CustomImpactFramePresets.EXPERIMENTAL_TONES));
+    }
+  
+  
     //private static final ResourceKey<Level> ABYSS = ResourceKey.create(Registries.DIMENSION, new ResourceLocation("lostworlds", "abyss"));
     private static final UUID HER_ID = UUID.fromString("7905095f-4e96-43d1-83a0-870265821205");
     private static final UUID WOMPWOMP_ID = UUID.fromString("9b65f606-23d8-428e-a769-5817ca979faf");
@@ -125,8 +140,10 @@ public class OtherHandler {
         
         BiomeSource vanilla = generator.getBiomeSource();
         if (vanilla instanceof DistrictBiomeSource) return;
-        BiomeSource wrapped = new DistrictBiomeSource(vanilla, level.getSeed(), level.registryAccess().registryOrThrow(Registries.BIOME));
-
+        
+        HolderGetter<Biome> biomeGetter = level.registryAccess().lookupOrThrow(Registries.BIOME);
+        BiomeSource wrapped = new DistrictBiomeSource(vanilla, level.getSeed(), biomeGetter);
+        
         ((ChunkGeneratorAccessor) generator).setBiomeSource(wrapped);
     }
 

@@ -32,6 +32,7 @@ minecraft {
 
         client {
             property 'forge.enabledGameTestNamespaces', mod_id
+            jvmArgs '-Xmx8G'
         }
 
         server {
@@ -89,8 +90,6 @@ dependencies {
     compileOnly fg.deobf("curse.maven:majruszs-progressive-difficulty-${majruszs_progressive_difficulty_version}")
     compileOnly fg.deobf("curse.maven:majrusz-library-${majrusz_library_version}")
     implementation fg.deobf("curse.maven:the-lost-cities-${lost_cities_version}")
-    implementation fg.deobf("curse.maven:nameless-trinkets-${nameless_trinkets_version}")
-    implementation fg.deobf("curse.maven:expandability-${expandability_version}")
     implementation fg.deobf("curse.maven:shelmarows-hud-${shelmarows_hud_version}")
     implementation fg.deobf("curse.maven:parcool-${parcool_version}")
     implementation fg.deobf("curse.maven:enhanced-ai-${enhanced_ai_version}")
@@ -106,6 +105,9 @@ dependencies {
     implementation fg.deobf("curse.maven:monster-expansion-${monster_expansion_version}")
     implementation fg.deobf("curse.maven:quark-${quark_version}")
     implementation fg.deobf("curse.maven:zeta-${zeta_version}")
+    implementation fg.deobf("curse.maven:gtbcs-spelllib-${gtbcs_version}")
+    implementation fg.deobf("curse.maven:defiled-lands-preborn-${defiled_lands_preborn_version}")
+    implementation fg.deobf("curse.maven:terrablender-${terrablender_version}")
 
     implementation fg.deobf("libs:ArcaneContent:0.0.1")
 

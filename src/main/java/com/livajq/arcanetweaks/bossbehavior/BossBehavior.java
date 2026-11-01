@@ -24,6 +24,7 @@ public abstract class BossBehavior<T extends LivingEntity> {
     
     public void onPhaseTick(T boss, int phase) {}
     public void onPhaseChange(T boss, int newPhase, int oldPhase, boolean firstTime) {}
+    public HurtResult onAttack(T boss, LivingEntity target, DamageSource src, float amount) { return HurtResult.pass(); }
     public HurtResult onHurt(T boss, DamageSource src, float amount) { return HurtResult.pass(); }
     public void onBossDied(T boss) {}
     public void onMinionAdded(T boss, Mob minion) {}

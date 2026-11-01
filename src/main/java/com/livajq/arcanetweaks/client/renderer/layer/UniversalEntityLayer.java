@@ -29,7 +29,7 @@ public class UniversalEntityLayer<T extends LivingEntity, M extends EntityModel<
         if (!entity.hasCustomName()) return;
         poseStack.pushPose();
         
-        if (entity.getCustomName().getString().equalsIgnoreCase("livajq")) renderRGBSkin(entity, poseStack, buffer, partialTicks, light);
+        if (entity.getCustomName().getString().equalsIgnoreCase("estie")) renderRGBSkin(entity, poseStack, buffer, partialTicks, light);
         //if (entity.getCustomName().getString().equalsIgnoreCase("test")) renderForcefield(entity, poseStack, buffer, partialTicks, light);
         //if (entity.getCustomName().getString().equalsIgnoreCase("test_alt")) renderForcefieldAlt(entity, poseStack, buffer, partialTicks, light);
         

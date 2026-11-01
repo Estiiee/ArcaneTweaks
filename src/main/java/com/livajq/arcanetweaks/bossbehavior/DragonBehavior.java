@@ -2,6 +2,8 @@ package com.livajq.arcanetweaks.bossbehavior;
 
 import com.estie.arcanecontent.init.ArcaneDamageSources;
 import com.estie.arcanecontent.init.ArcaneSounds;
+import com.gametechbc.traveloptics.init.TravelopticsMessages;
+import com.gametechbc.traveloptics.network.ImpactFramePacket;
 import com.github.alexmodguy.alexscaves.AlexsCaves;
 import com.github.alexmodguy.alexscaves.server.entity.ACEntityRegistry;
 import com.github.alexmodguy.alexscaves.server.entity.item.NuclearExplosionEntity;
@@ -183,6 +185,7 @@ public abstract class DragonBehavior<T extends EntityDragonBase> extends BossBeh
         explosion.setPos(explosionPos.x, explosionPos.y, explosionPos.z);
         explosion.setSize(AlexsCaves.COMMON_CONFIG.nukeExplosionSizeModifier.get().floatValue());
         level.addFreshEntity(explosion);
+        TravelopticsMessages.sendImpactFrameToRange(dragon, 128, getImpactFramePreset());
     }
     
     private void spawnDragonPreviewLine(EntityDragonBase dragon) {
@@ -223,4 +226,5 @@ public abstract class DragonBehavior<T extends EntityDragonBase> extends BossBeh
     
     public abstract Color getExplosionColor();
     public abstract SoundEvent getExplosionChargeSound();
+    public abstract List<ImpactFramePacket.Frame> getImpactFramePreset();
 }

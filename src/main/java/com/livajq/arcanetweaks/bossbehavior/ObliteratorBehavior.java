@@ -1,6 +1,8 @@
 package com.livajq.arcanetweaks.bossbehavior;
 
 import com.estie.arcanecontent.common.capability.ArcaneCapabilities;
+import com.gametechbc.traveloptics.init.TravelopticsMessages;
+import com.gametechbc.traveloptics.util.TravelopticsImpactFramePresets;
 import net.miauczel.legendary_monsters.entity.AnimatedMonster.IAnimatedBoss.TheObliterator.TheObliteratorEntity;
 import net.miauczel.legendary_monsters.entity.ModEntities;
 import net.minecraft.ChatFormatting;
@@ -29,6 +31,8 @@ public class ObliteratorBehavior extends BossBehavior<TheObliteratorEntity> {
     
     @Override
     public void onPhaseTick(TheObliteratorEntity obliterator, int phase) {
+        if (obliterator.getAttackState() == 53 && obliterator.attackTicks == 48)
+            TravelopticsMessages.sendImpactFrameToRange(obliterator, 64, TravelopticsImpactFramePresets.sequence(TravelopticsImpactFramePresets.NATURE_SHADOWS, TravelopticsImpactFramePresets.NATURE_TONES));
         
         if (isClone(obliterator)) {
             obliterator.getCapability(ArcaneCapabilities.BOSS_MINION)

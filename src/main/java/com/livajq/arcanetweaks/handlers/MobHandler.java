@@ -1,12 +1,14 @@
 package com.livajq.arcanetweaks.handlers;
 
 import cn.leolezury.eternalstarlight.common.EternalStarlight;
+import cn.leolezury.eternalstarlight.common.data.ESDimensions;
 import com.estie.arcanecontent.init.ArcaneDamageSources;
 import com.github.L_Ender.cataclysm.world.data.CMWorldData;
 import com.livajq.arcanetweaks.ArcaneTweaks;
 import com.livajq.arcanetweaks.Config;
 import insane96mcp.enhancedai.modules.mobs.Leaders;
 import io.redspace.ironsspellbooks.api.entity.IOminousEntity;
+import io.redspace.ironsspellbooks.entity.mobs.keeper.KeeperEntity;
 import io.redspace.ironsspellbooks.registries.SoundRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -45,25 +47,24 @@ import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = ArcaneTweaks.MODID)
 public class MobHandler {
-    private static final ResourceKey<Level> STARLIGHT = ResourceKey.create(Registries.DIMENSION, EternalStarlight.id("starlight"));
     private static final TagKey<EntityType<?>> FORGE_BOSS = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("forge", "boss"));
     private static final UUID BOSS_HEALTH_BONUS_UUID = UUID.fromString("a3f1c9e2-7b4d-4e8a-9c1f-5d6b8e2a4f7c");
     private static final UUID BOSS_ARMOR_BONUS_UUID = UUID.fromString("b4e2d0f3-8c5e-4f9b-ad2f-6e7c9f3b5a8d");
     private static final UUID BOSS_TOUGHNESS_BONUS_UUID = UUID.fromString("c5f3e1a4-9d6f-4a8c-be3a-7f8d0a4c6b9e");
     
-    //spawn ominous Irons bosses based on dimension
+    //spawn ominous Irons bosses based on dimension (and restored for knights)
     @SubscribeEvent
     public static void handleOminousEntities(EntityJoinLevelEvent event) {
         if (!(event.getLevel() instanceof ServerLevel serverLevel) || event.loadedFromDisk()) return;
+        if (serverLevel.dimension() != ESDimensions.STARLIGHT_KEY) return;
         
         var entity = event.getEntity();
         if (entity instanceof IOminousEntity ominousSettings && !ominousSettings.isOminous() && ominousSettings.canTriggerOminous()) {
-            if (serverLevel.dimension() == STARLIGHT) {
-                Vec3 center = entity.position();
-                ominousSettings.onOminousTrigger();
-                serverLevel.playSound(null, BlockPos.containing(center), SoundRegistry.TRIAL_SPAWNER_OMINOUS_ACTIVATE.get(), SoundSource.BLOCKS, 4, 1.0F);
-            }
+            Vec3 center = entity.position();
+            ominousSettings.onOminousTrigger();
+            serverLevel.playSound(null, BlockPos.containing(center), SoundRegistry.TRIAL_SPAWNER_OMINOUS_ACTIVATE.get(), SoundSource.BLOCKS, 4, 1.0F);
         }
+        else if (entity instanceof KeeperEntity knight) knight.setIsRestored();
     }
     
     //set IgnisBossDefeatedOnce flag by killing drag instead

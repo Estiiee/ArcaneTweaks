@@ -2,6 +2,7 @@ package com.livajq.arcanetweaks;
 
 import com.Polarice3.Goety.utils.MathHelper;
 import com.estie.arcanecontent.common.item.BlockItemOfSilly;
+import com.livajq.arcanetweaks.compat.traveloptics.CustomImpactFramePresets;
 import com.livajq.arcanetweaks.mobs.MobStats;
 import net.bandit.reskillable.common.commands.skills.SkillAttributeBonus;
 import net.minecraft.core.registries.Registries;
@@ -51,6 +52,7 @@ public final class Config {
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> DISMOUNT_BIOMES;
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> TEMPERED_MONSTER_BIOMES;
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> SPIRAL_SPIRE_BLOCKS;
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> NO_GRAVITY_BLOCKS;
     
     private static final ForgeConfigSpec.ConfigValue<String> RITUAL_END_BIOMETAG;
     private static final ForgeConfigSpec.ConfigValue<String> RITUAL_ADEPT_NETHER_BIOMETAG;
@@ -68,6 +70,8 @@ public final class Config {
     private static final ForgeConfigSpec.ConfigValue<String> ENCHANTMENT_SECONDARY_COST_ITEM;
     private static final ForgeConfigSpec.ConfigValue<String> TRADING_COST_ITEM;
     private static final ForgeConfigSpec.ConfigValue<String> STARLIGHT_PORTAL_ITEM;
+    private static final ForgeConfigSpec.ConfigValue<String> EXPERIMENTAL_IMPACT_SHADOWS;
+    private static final ForgeConfigSpec.ConfigValue<String> EXPERIMENTAL_IMPACT_TONES;
     
     private static final ForgeConfigSpec.BooleanValue HARDCORE_ICON_VISIBLE;
     private static final ForgeConfigSpec.BooleanValue NARRATOR_KEYBIND;
@@ -219,7 +223,7 @@ public final class Config {
         
         BUILDER.pop();
         
-        BUILDER.push("canSustainPlant Rules");
+        BUILDER.push("Blocks");
         BUILDER.comment("The following can be used to add additional blocks for plants to be placed on");
         
         EXTRA_PLANT_SURFACES = BUILDER
@@ -242,6 +246,28 @@ public final class Config {
                 .defineListAllowEmpty(
                         List.of("extraPlantSurfacesWater"),
                         List.of("betterend:hydralux_sapling - minecraft:stone, minecraft:grass_block"
+                        ),
+                        o -> o instanceof String
+                );
+        
+        SPIRAL_SPIRE_BLOCKS = BUILDER
+                .comment("Blocks on which Spiral Spires can generate")
+                .defineListAllowEmpty(
+                        List.of("spiralSpireBlocks"),
+                        List.of(
+                                "minecraft:grass_block",
+                                "minecraft:sand"
+                        ),
+                        o -> o instanceof String
+                );
+        
+        NO_GRAVITY_BLOCKS = BUILDER
+                .comment("Blocks with gravity which should have said gravity disabled")
+                .defineListAllowEmpty(
+                        List.of("noGravityBlocks"),
+                        List.of(
+                                "biomesoplenty:black_sand",
+                                "biomesoplenty:mossy_black_sand"
                         ),
                         o -> o instanceof String
                 );
@@ -467,23 +493,19 @@ public final class Config {
                         o -> o instanceof String
                 );
         
-        SPIRAL_SPIRE_BLOCKS = BUILDER
-                .comment("Blocks on which Spiral Spires can generate")
-                .defineListAllowEmpty(
-                        List.of("spiralSpireBlocks"),
-                        List.of(
-                                "minecraft:grass_block",
-                                "minecraft:sand"
-                        ),
-                        o -> o instanceof String
-                );
-        
         NARRATOR_KEYBIND = BUILDER.comment("If for some reason you want to bring the narrator keybind back, set this to true").define("narratorKeybind", false);
         
         SOUL_FRACTURE_STRENGTH = BUILDER.comment("Maximum health reduction per level of the Soul Fracture effect (1.0 = 100%)").defineInRange("soulFractureStrength", 0.02D, 0.0D, 1.0D);
         
         STARLIGHT_PORTAL_ITEM = BUILDER.comment("Item used to activate the portal leading to the Starlight dimensionn").define("starlightPortalItem", "minecraft:enchanted_golden_apple");
-      
+        
+        EXPERIMENTAL_IMPACT_SHADOWS = BUILDER
+                .comment("Impact frame shadow colors: exactly 3, comma separated. Hex (#RRGGBB) or decimal.")
+                .define("impactFrameShadows", "#0A0200, #1E0601, #3D0A01");
+        EXPERIMENTAL_IMPACT_TONES = BUILDER
+                .comment("Impact frame tone colors: exactly 7, comma separated, dark to bright. The first one is currently unused.")
+                .define("impactFrameTones", "#1E0601, #3D0A01, #7E0F02, #A72A02, #D64700, #FF871D, #FFB63C");
+        
         BUILDER.pop();
         SPEC = BUILDER.build();
     }
@@ -503,21 +525,18 @@ public final class Config {
     public static Set<String> villagerBookBlacklistSet;
     public static Set<String> dismountBiomesSet;
     public static Set<String> spiralSpireBlocksSet;
+    public static Set<ResourceLocation> noGravityBlocks;
  
     public static Map<ResourceLocation, Set<ResourceLocation>> extraPlantSurfaces = new HashMap<>();
     public static Map<ResourceLocation, Set<ResourceLocation>> extraPlantSurfacesWater = new HashMap<>();
     public static Map<SkillAttributeBonus, Supplier<Attribute>> reskillableAttributeBonuses = new HashMap<>();
     public static Map<EntityType<?>, MobStats> mobAttributeModifiers = new HashMap<>();
     public static Map<ResourceLocation, Integer> enchantmentTiers = new HashMap<>();
-    public static Map<BlockItemOfSilly.SillyEffect, Integer> blockSillyEffectWeight;
     public static Map<ResourceLocation, ShieldBashProperty> shieldBashProperties;
     public static Map<ResourceLocation, TemperedMonsterBiomes> temperedMonsterBiomes;
  
     public static List<String> deathMessages;
     public static List<String> lostCitiesDoors;
-    public static List<String> blockSillyPositiveEffects;
-    public static List<String> blockSillyNegativeEffects;
-    public static List<String> blockSillyItems;
     public static List<MobReplacement> mobReplacements;
     
     public static ResourceKey<Biome> apostleSuperbossBiome;
@@ -531,7 +550,6 @@ public final class Config {
     
     public static boolean hardcoreIconVisible;
     public static boolean narratorKeybind;
-    public static boolean blockSillyEnabled;
     
     public static double obliteratorDamageCap;
     public static double obliteratorGroundNukeDamageFlat;
@@ -544,13 +562,11 @@ public final class Config {
     public static double hardcoreIconPosY;
     public static double seaSerpentReach;
     public static double soulFractureStrength;
-    public static double blockSillyChance;
     public static double mobKillHealAmount;
     public static double bossMultiplayerHealthScaling;
     public static double bossMultiplayerArmorScaling;
     public static double bossMultiplayerToughnessScaling;
     
-    public static int worldgenType;
     public static int hardcoreLivesCount;
     public static int hardcoreIconSize;
     public static int dragonNukeColorFire;
@@ -562,18 +578,13 @@ public final class Config {
     public static int blockBreakCooldownBase;
     public static int blockBreakCooldownExtra;
     public static int blockBreakCooldownMax;
-    public static int parryWindUp;
-    public static int parryWindow;
-    public static int parryCooldownFail;
-    public static int parryCooldownSuccess;
     public static int gamestageSkillCapNormal;
     public static int gamestageSkillCapExpert;
     public static int gamestageSkillCapMaster;
-    public static int blockSillyGiveItemsRolls;
-    public static int blockSillyStealItemsRolls;
-    public static int blockSillyVisualsRadius;
-    public static int blockSillyEffectRolls;
     public static int deathsForBossFullHeal;
+   
+    public static int[] experimentalImpactTones;
+    public static int[] experimentalImpactShadows;
     
     // =========================================================
     // Sync
@@ -644,11 +655,29 @@ public final class Config {
         deathsForBossFullHeal = DEATHS_FOR_BOSS_FULL_HEAL.get();
         temperedMonsterBiomes = parseTemperedMonsterBiomes();
         spiralSpireBlocksSet = new HashSet<>(SPIRAL_SPIRE_BLOCKS.get());
+        experimentalImpactShadows = parseImpactColors(EXPERIMENTAL_IMPACT_SHADOWS.get(), DEFAULT_SHADOWS);
+        experimentalImpactTones = parseImpactColors(EXPERIMENTAL_IMPACT_TONES.get(), DEFAULT_TONES);
+        noGravityBlocks = NO_GRAVITY_BLOCKS.get().stream().map(ResourceLocation::tryParse).filter(Objects::nonNull).collect(Collectors.toCollection(HashSet::new));
     }
     
     // =========================================================
     // Helpers
     // =========================================================
+    
+    private static final int[] DEFAULT_SHADOWS = {655872, 1967617, 4000257};
+    private static final int[] DEFAULT_TONES = {1967617, 4000257, 8261378, 10955266, 14042880, 16746269, 16758332};
+    
+    private static int[] parseImpactColors(String raw, int[] fallback) {
+        String[] parts = raw.split(",");
+        if (parts.length != fallback.length) return fallback;
+        int[] out = new int[parts.length];
+        try {
+            for (int i = 0; i < parts.length; i++) out[i] = Integer.decode(parts[i].trim());
+        } catch (NumberFormatException e) {
+            return fallback;
+        }
+        return out;
+    }
     
     private static Map<ResourceLocation, Set<ResourceLocation>> parsePlantSurfaces(boolean water) {
         Map<ResourceLocation, Set<ResourceLocation>> map = new HashMap<>();

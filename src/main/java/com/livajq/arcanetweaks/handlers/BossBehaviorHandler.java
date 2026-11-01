@@ -57,18 +57,32 @@ public class BossBehaviorHandler {
     }
     
     @SubscribeEvent
-    public static void onBossHurt(LivingHurtEvent event) {
-        LivingEntity boss = event.getEntity();
-        BossBehavior<LivingEntity> behavior = BossBehaviorRegistry.get(boss);
-        if (behavior == null) return;
+    public static void onBossOrTargetHurt(LivingHurtEvent event) {
+        LivingEntity attacker = event.getSource().getEntity() instanceof LivingEntity living ? living : null;
+        LivingEntity target = event.getEntity();
         
-        HurtResult result = behavior.onHurt(boss, event.getSource(), event.getAmount());
+        BossBehavior<LivingEntity> behaviorAttacker = attacker != null ? BossBehaviorRegistry.get(attacker) : null;
+        BossBehavior<LivingEntity> behaviorTarget = BossBehaviorRegistry.get(target);
         
-        if (result.cancel) {
-            event.setCanceled(true);
-            return;
+        if (behaviorAttacker != null) {
+            HurtResult result = behaviorAttacker.onAttack(attacker, target, event.getSource(), event.getAmount());
+            
+            if (result.cancel) {
+                event.setCanceled(true);
+                return;
+            }
+            if (result.modify) event.setAmount(result.newAmount);
         }
-        if (result.modify) event.setAmount(result.newAmount);
+        
+        if (behaviorTarget != null) {
+            HurtResult result = behaviorTarget.onHurt(target, event.getSource(), event.getAmount());
+            
+            if (result.cancel) {
+                event.setCanceled(true);
+                return;
+            }
+            if (result.modify) event.setAmount(result.newAmount);
+        }
     }
     
     @SubscribeEvent

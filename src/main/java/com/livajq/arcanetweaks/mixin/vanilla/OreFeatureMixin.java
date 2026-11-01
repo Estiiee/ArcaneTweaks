@@ -1,7 +1,7 @@
 package com.livajq.arcanetweaks.mixin.vanilla;
 
+import com.estie.arcanecontent.Config;
 import com.estie.arcanecontent.init.ArcaneBlocks;
-import com.livajq.arcanetweaks.Config;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.levelgen.feature.OreFeature;

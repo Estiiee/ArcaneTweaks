@@ -11,6 +11,7 @@ import com.livajq.arcanetweaks.compat.darkerdepths.BiomeFogConfigLoader;
 import com.livajq.arcanetweaks.compat.goety.ritualtype.AdeptNetherCustomRitualType;
 import com.livajq.arcanetweaks.compat.goety.ritualtype.EndCustomRitualType;
 import com.livajq.arcanetweaks.compat.goety.ritualtype.ExpertNetherCustomRitualType;
+import com.livajq.arcanetweaks.compat.traveloptics.CustomImpactFramePresets;
 import com.livajq.arcanetweaks.handlers.PacketHandler;
 import com.livajq.arcanetweaks.handlers.ResistanceHandler;
 import com.livajq.arcanetweaks.handlers.ResourceReloadHandler;
@@ -53,7 +54,7 @@ public class ArcaneTweaks {
         
         context.registerConfig(ModConfig.Type.COMMON, Config.SPEC, MODID + "/arcanetweaks.toml");
     }
-
+    
     private void commonSetup(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
             RitualType.addRitualType("end", new EndCustomRitualType());
@@ -65,6 +66,7 @@ public class ArcaneTweaks {
             BiomeFogConfigLoader.init();
             PacketHandler.register();
             ResistanceHandler.init();
+            CustomImpactFramePresets.init();
             ModEffects.SOUL_FRACTURE.get().addAttributeModifier(Attributes.MAX_HEALTH, "CB3F55D3-645C-4F38-A497-9C13A33DB5CF", -Config.soulFractureStrength, AttributeModifier.Operation.MULTIPLY_TOTAL);
             
             ClimateReplacementManager.register(

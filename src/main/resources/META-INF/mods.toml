@@ -103,7 +103,7 @@ side="CLIENT"
 [[dependencies.${mod_id}]]
 modId="traveloptics"
 mandatory=true
-versionRange="[6.3.0-1.20.1,)"
+versionRange="[7.0.0-1.20.1,)"
 ordering="AFTER"
 side="BOTH"
 
@@ -118,13 +118,6 @@ side="BOTH"
 modId="lostcities"
 mandatory=true
 versionRange="[1.20-7.3.6,)"
-ordering="AFTER"
-side="BOTH"
-
-[[dependencies.${mod_id}]]
-modId="nameless_trinkets"
-mandatory=true
-versionRange="[1.20.1-1.8.5,)"
 ordering="AFTER"
 side="BOTH"
 
@@ -216,5 +209,12 @@ side="BOTH"
 modId="arcanecontent"
 mandatory=true
 versionRange="[0.0.1,)"
+ordering="AFTER"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="defiled_lands_preborn"
+mandatory=false
+versionRange="[3.0.4c,)"
 ordering="AFTER"
 side="BOTH"

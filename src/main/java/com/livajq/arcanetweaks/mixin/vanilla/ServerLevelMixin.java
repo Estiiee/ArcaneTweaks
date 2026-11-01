@@ -41,7 +41,6 @@ public abstract class ServerLevelMixin {
         double acc = accessor.arcanetweaks$getTickSpeedAccumulator();
         
         acc += multiplier;
-        entity.tickCount--;
         while (acc >= 1.0f) {
             entity.tickCount++;
             entity.tick();
